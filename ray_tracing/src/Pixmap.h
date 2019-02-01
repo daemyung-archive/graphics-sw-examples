@@ -14,7 +14,7 @@
 
 class Pixmap {
 public:
-    using PixelType = Vec3<uint8_t>;
+    using PixelType = Vec3<float>;
 
     Pixmap(uint32_t width, uint32_t height);
 

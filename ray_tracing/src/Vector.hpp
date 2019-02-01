@@ -68,12 +68,10 @@ struct Vec3 {
 
     template<typename U>
     explicit operator Vec3<U>() const {
-        constexpr auto kMax = std::numeric_limits<U>::max();
-
         return Vec3<U> {
-                static_cast<U>(x * kMax),
-                static_cast<U>(y * kMax),
-                static_cast<U>(z * kMax)
+                static_cast<U>(x * std::numeric_limits<U>::max()),
+                static_cast<U>(y * std::numeric_limits<U>::max()),
+                static_cast<U>(z * std::numeric_limits<U>::max())
         };
     }
 
@@ -228,7 +226,7 @@ inline Vec3<T> normalize(const Vec3<T> &v) noexcept {
 }
 
 template<typename T>
-inline float dot(const Vec3<T> &v1, const Vec3<T> &v2) noexcept {
+inline T dot(const Vec3<T> &v1, const Vec3<T> &v2) noexcept {
     return v1.dot(v2);
 }
 

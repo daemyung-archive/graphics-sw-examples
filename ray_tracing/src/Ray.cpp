@@ -9,11 +9,11 @@ Ray::Ray() noexcept
 
 }
 
-Ray::Ray(const VecType &origin, const VecType &direction) noexcept
+Ray::Ray(const Vec3<float> &origin, const Vec3<float> &direction) noexcept
         : origin { origin }, direction { direction } {
 
 }
 
-Ray::VecType Ray::getPointAt(float time) const noexcept {
+Vec3<float> Ray::getPointAt(float time) const noexcept {
     return origin + (direction * time);
 }

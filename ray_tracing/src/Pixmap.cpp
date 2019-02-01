@@ -5,6 +5,7 @@
 #include "Pixmap.h"
 
 #include <cassert>
+#include <regex>
 #include <stb/stb_image.h>
 #include <stb/stb_image_write.h>
 
@@ -22,10 +23,24 @@ Pixmap &Pixmap::setPixel(uint32_t x, uint32_t y, const PixelType &pixel) {
 void Pixmap::save(const std::string &fileName) const {
     const auto ext = fileName.substr(fileName.length() - 3);
 
+    std::vector<Vec3<uint8_t>> rgbs;
+    for (auto &pixel : m_pixels) {
+        constexpr auto kMin = 0.0f;
+        constexpr auto kMax = 255.0f;
+
+        Vec3<uint8_t> rgb {
+                static_cast<uint8_t>(std::clamp(pixel.x * kMax, kMin, kMax)),
+                static_cast<uint8_t>(std::clamp(pixel.y * kMax, kMin, kMax)),
+                static_cast<uint8_t>(std::clamp(pixel.z * kMax, kMin, kMax))
+        };
+
+        rgbs.push_back(rgb);
+    }
+
     stbi_flip_vertically_on_write(true);
 
     if ("png" == ext) {
-        stbi_write_png(fileName.c_str(), m_width, m_height, STBI_rgb, m_pixels.data(), STBI_rgb * m_width);
+        stbi_write_png(fileName.c_str(), m_width, m_height, STBI_rgb, rgbs.data(), STBI_rgb * m_width);
     } else {
         assert(false);
     }

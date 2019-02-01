@@ -24,12 +24,12 @@
 
 namespace {
 
-    constexpr auto kResolution = Vec2<uint32_t> { 500, 250 };
+    constexpr auto kResolution = Vec2<uint32_t> { 400, 200 };
     constexpr auto kSampleCount = 16;
-    constexpr auto kMaxDepth = 50;
+    constexpr auto kMaxDepth = 32;
 
 #if USE_MULTI_THREAD
-    constexpr auto kThreadCount = 25;
+    constexpr auto kThreadCount = 50;
 #endif
 };
 
@@ -38,10 +38,11 @@ HitableList generateRandomScene() {
 
     list.push_back(std::make_unique<Sphere>(
             Vec3<float> { 0.0f, -1000.0f, 0.0f }, 1000.0f,
-            std::make_unique<Lambertian>(Vec3<float> { 0.5f, 0.5f, 0.5f })
+            std::make_unique<Lambertian>(Vec3<float> { 0.6f, 0.6f, 0.6f })
     ));
 
-    std::random_device generator;
+    std::random_device randomDevice;
+    std::mt19937 generator(randomDevice());
     std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
     for (auto x = -11; x != 11; ++x)
@@ -137,10 +138,11 @@ struct Tile {
 void render(Camera &camera, HitableList &world, Pixmap &buffer, const Tile &tile) {
     for (int y = tile.size.height + tile.offset.y - 1; y >= tile.offset.y; --y)
         for (int x = 0; x < tile.size.width + tile.offset.x; ++x) {
-            auto color = Vec3<float> { 0.0f };
+            auto pixel = Vec3<float> { 0.0f };
 
-            std::random_device generator;
-            std::uniform_real_distribution<float> distribution(0.0f, 1.0f - std::numeric_limits<float>::epsilon());
+            std::random_device randomDevice;
+            std::mt19937 generator(randomDevice());
+            std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
             for (auto i = 0; i != kSampleCount; ++i) {
                 Vec2<float> coord = {
@@ -149,15 +151,14 @@ void render(Camera &camera, HitableList &world, Pixmap &buffer, const Tile &tile
                 };
 
                 auto ray = camera.getRay(coord);
-                color += calcColor(ray, world, 0);
+                pixel += calcColor(ray, world, 0);
             }
 
-            color /= kSampleCount;
+            pixel /= kSampleCount;
 
             constexpr auto kGamma = 2.4f;
-            color = gammaCorrect(color, kGamma);
+            pixel = gammaCorrect(pixel, kGamma);
 
-            auto pixel = static_cast<Pixmap::PixelType>(color);
             buffer.setPixel(x, y, pixel);
         }
 }
@@ -169,14 +170,19 @@ int main(int argc, char *argv[]) {
     HitableList world = generateRandomScene();
 
     // Camera variables
-    constexpr auto kLookFrom = Vec3<float> { 3.0f, 1.0f, 2.0f };
+    constexpr auto kLookFrom = Vec3<float> { 2.5f, 1.5f, 2.0f };
     constexpr auto kLookAt = Vec3<float> { 0.0f, 0.0f, -1.0f };
     constexpr auto kYAxis = Vec3<float> { 0.0f, 1.0f, 0.0f };
     const auto kVFov = 90.0f;
     const auto kAspect = kResolution.width / static_cast<float>(kResolution.height);
 
+    // Camera depth of field
+    constexpr auto kAperture = 0.075f;
+    const auto kFocusDistance = (kLookFrom - kLookAt).length();
+
     Camera camera {
             kLookFrom, kLookAt, kYAxis, kVFov, kAspect,
+            kAperture, kFocusDistance
     };
 
 #if USE_MULTI_THREAD
@@ -201,7 +207,8 @@ int main(int argc, char *argv[]) {
         for (int x = 0; x < kResolution.width; ++x) {
             auto color = Vec3<float> { 0.0f };
 
-            std::random_device generator;
+            std::random_device randomDevice;
+            std::mt19937 generator(randomDevice());
             std::uniform_real_distribution<float> distribution(0.0f, 1.0f - std::numeric_limits<float>::epsilon());
 
             for (auto i = 0; i != kSampleCount; ++i) {

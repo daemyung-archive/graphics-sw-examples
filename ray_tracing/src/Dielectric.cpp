@@ -42,7 +42,8 @@ std::optional<ScatterInfo> Dielectric::scatter(const Ray &ray, const HitInfo &hi
     auto refractResult = refract(normalize(ray.direction), normalize(normal), eta);
     float reflectProb = refractResult.has_value() ? schlick(cosine, m_reflectIndex) : 1.0f;
 
-    std::random_device generator;
+    std::random_device randomDevice;
+    std::mt19937 generator(randomDevice());
     std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
     if (distribution(generator) < reflectProb)

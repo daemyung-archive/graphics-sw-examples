@@ -10,7 +10,8 @@
 namespace {
 
     Vec3<float> getRandomPositionInUnitDisk() {
-        std::random_device generator;
+        std::random_device randomDevice;
+        std::mt19937 generator(randomDevice());
         std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
 
         Vec3<float> position = { 0.0f };

@@ -27,7 +27,8 @@ ScatterInfo &ScatterInfo::setRay(const Ray &ray) {
 Vec3<float> Material::getRandomPositionInUnitSphere() const noexcept {
     Vec3<float> position { 0.0f };
 
-    std::random_device generator;
+    std::random_device randomDevice;
+    std::mt19937 generator(randomDevice());
     std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
 
     do {

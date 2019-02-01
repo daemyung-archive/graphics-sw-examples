@@ -9,16 +9,14 @@
 #include "Vector.hpp"
 
 struct Ray {
-    using VecType = Vec3<float>;
-
-    VecType origin;
-    VecType direction;
+    Vec3<float> origin;
+    Vec3<float> direction;
 
     Ray() noexcept;
 
-    Ray(const VecType &origin, const VecType &direction) noexcept;
+    Ray(const Vec3<float> &origin, const Vec3<float> &direction) noexcept;
 
-    VecType getPointAt(float time) const noexcept;
+    Vec3<float> getPointAt(float time) const noexcept;
 };
 
 
