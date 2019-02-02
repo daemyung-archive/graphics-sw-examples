@@ -6,8 +6,7 @@
 #define RAY_TRACING_HITABLE_H
 
 
-#include <optional>
-
+#include "Optional.hpp"
 #include "Vector.hpp"
 
 struct Ray;

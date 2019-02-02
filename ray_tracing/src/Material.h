@@ -6,8 +6,7 @@
 #define RAY_TRACING_MATERIAL_H
 
 
-#include <optional>
-
+#include "Optional.hpp"
 #include "Vector.hpp"
 #include "Ray.h"
 #include "Hitable.h"

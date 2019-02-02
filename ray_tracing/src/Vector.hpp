@@ -9,7 +9,8 @@
 #include <cassert>
 #include <cmath>
 #include <limits>
-#include <optional>
+
+#include "Optional.hpp"
 
 template<typename T>
 struct Vec2 {

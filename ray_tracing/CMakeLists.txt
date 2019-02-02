@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.00)
 
-add_executable(ray_tracing src/Vector.hpp
+add_executable(ray_tracing src/Optional.hpp
+                           src/Vector.hpp
                            src/Pixmap.h
                            src/Pixmap.cpp
                            src/Ray.h
@@ -29,8 +30,14 @@ target_link_libraries(ray_tracing PRIVATE stb
                                           ${CMAKE_THREAD_LIBS_INIT}
                                           ${CMAKE_DL_LIBS})
 
+if (CMAKE_SYSTEM_NAME MATCHES Darwin)
+    find_package(Boost REQUIRED)
+
+    target_include_directories(ray_tracing PRIVATE ${Boost_INCLUDE_DIR})
+endif ()
+
 target_compile_definitions(ray_tracing PUBLIC NOMINMAX
-                                               _USE_MATH_DEFINES)
+                                       _USE_MATH_DEFINES)
 
 set_target_properties(ray_tracing PROPERTIES CXX_STANDARD          17
                                              CXX_STANDARD_REQUIRED ON)
